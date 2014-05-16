@@ -2,7 +2,7 @@
 require("/home/pi/lib/php/keystore.php");
 include("/home/pi/bin/krumo/class.krumo.php");
 $out = array();
-$meta = json_decode(file_get_contents("github.meta.json"), true);
+$meta = json_decode(file_get_contents("data/github.meta.json"), true);
 // iterate all 10 pages
 for ($page = 1; $page <= 10; $page++) {
     $curl = curl_init("https://api.github.com/users/OllieTerrance/events?page=" . $page);
@@ -22,7 +22,7 @@ for ($page = 1; $page <= 10; $page++) {
     if ($page === 1 && !isset($_GET["force"])) {
         if ($code === 304) {
             print(json_encode(array("message" => "No changes since last update.")));
-            $out = json_decode(file_get_contents("github.json"), true);
+            $out = json_decode(file_get_contents("data/github.json"), true);
             break;
         }
         // updated, save current ETag to meta
@@ -33,7 +33,7 @@ for ($page = 1; $page <= 10; $page++) {
     }
     if ($code !== 200) {
         print(json_encode(array("message" => "Failed to update page " . $page . " with error code " . $code . ".")));
-        $out = json_decode(file_get_contents("github.json"), true);
+        $out = json_decode(file_get_contents("data/github.json"), true);
         break;
     }
     $feed = json_decode($resp);
@@ -141,10 +141,10 @@ for ($page = 1; $page <= 10; $page++) {
         array_push($out, $item);
     }
 }
-$file = fopen("github.json", "w");
+$file = fopen("data/github.json", "w");
 fwrite($file, json_encode($out));
 fclose($file);
-$file = fopen("github.meta.json", "w");
+$file = fopen("data/github.meta.json", "w");
 fwrite($file, json_encode($meta));
 fclose($file);
 if (isset($_GET["pretty"])) {
