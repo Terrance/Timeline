@@ -47,7 +47,7 @@ for ($page = 1; $page <= 10; $page++) {
                     "link" => "https://github.com/" . $event->repo->name
                 )
             ),
-            "time" => $event->created_at
+            "time" => strtotime($event->created_at)
         );
         $data = $event->payload;
         switch ($event->type) {

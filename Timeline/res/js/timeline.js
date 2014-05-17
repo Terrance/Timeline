@@ -1,8 +1,7 @@
 $(document).ready(function() {
-    function formatDate(date, pattern) {
-        if (!date) {
-            date = new Date();
-        }
+    function formatDate(time, pattern) {
+        var date = new Date(0);
+        date.setUTCSeconds(time);
         if (!pattern) {
             pattern = "dd/mm/yyyy HH:MM:SS";
         }
@@ -22,34 +21,42 @@ $(document).ready(function() {
             .split("SS").join(pad(date.getSeconds()))
             .split("S").join(date.getSeconds());
     }
-    $.ajax({
-        url: "data/github.json",
-        success: function(resp, stat, xhr) {
-            $(".container").empty();
-            $.each(resp, function(i, item) {
-                var panel = $("<div/>").addClass("panel panel-default")
-                    .append($("<div/>").addClass("panel-body").text(item.desc));
-                if (item.links.length) {
-                    var footer = $("<div/>").addClass("panel-footer");
-                    $.each(item.links, function(j, link) {
-                        footer.append($("<a/>").addClass("btn btn-default btn-sm")
-                                          .attr("href", link.link)
-                                          .append($("<i/>").addClass("fa fa-" + link.icon))
-                                          .append(link.text));
-                    });
-                    footer.append($("<a/>").addClass("btn btn-default btn-sm pull-right")
-                                      .append($("<i/>").addClass("fa fa-clock-o"))
-                                      .append(formatDate(new Date(item.time))));
-                    panel.append(footer);
-                }
-                $(".container").append(panel);
-            });
-            $("a").click(function(e) {
-                if (this.href) {
-                    window.open(this.href);
-                    e.preventDefault();
-                }
-            });
-        }
+    var colours = {
+        "github": "default",
+        "reddit": "info"
+    }
+    $.each(["github", "reddit"], function(i, source) {
+        $.ajax({
+            url: "data/" + source + ".json",
+            success: function(resp, stat, xhr) {
+                $(".container .alert").remove();
+                $.each(resp, function(j, item) {
+                    var panel = $("<div/>").addClass("panel panel-" + colours[source]);
+                    if (item.desc) {
+                        panel.append($("<div/>").addClass("panel-body").html(item.desc));
+                    }
+                    if (item.links.length) {
+                        var footer = $("<div/>").addClass("panel-footer");
+                        $.each(item.links, function(k, link) {
+                            footer.append($("<a/>").addClass("btn btn-default btn-sm")
+                                              .attr("href", link.link)
+                                              .append($("<i/>").addClass("fa fa-" + link.icon))
+                                              .append(link.text));
+                        });
+                        footer.append($("<a/>").addClass("btn btn-default btn-sm pull-right")
+                                          .append($("<i/>").addClass("fa fa-clock-o"))
+                                          .append(formatDate(item.time)));
+                        panel.append(footer);
+                    }
+                    $(".container").append(panel);
+                });
+                $("a").click(function(e) {
+                    if (this.href) {
+                        window.open(this.href);
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
     });
 });
