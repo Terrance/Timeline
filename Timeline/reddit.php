@@ -29,6 +29,9 @@ for ($page = 0; $page < 10; $page++) {
         $meta = array("after" => $feed->data->after);
     }
     curl_close($curl);
+    if (isset($_GET["raw"])) {
+        krumo($feed);
+    }
     foreach ($feed->data->children as $event) {
         $data = $event->data;
         $item = array(
@@ -65,13 +68,17 @@ for ($page = 0; $page < 10; $page++) {
                     ));
                 // external link
                 } else {
+                    $link = preg_replace("/[a-z]+:\/\/(www\.)?/i", "", $data->url);
+                    if (strlen($link) > 30) {
+                        $link = substr($link, 0, 25) . "...";
+                    }
                     array_push($item["links"], array(
                         "icon" => "comments-o",
                         "text" => $data->title,
                         "link" => "http://www.reddit.com" . $data->permalink
                     ), array(
                         "icon" => "link",
-                        "text" => $data->url,
+                        "text" => $link,
                         "link" => $data->url
                     ));
                 }

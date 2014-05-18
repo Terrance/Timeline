@@ -38,6 +38,9 @@ for ($page = 1; $page <= 10; $page++) {
     }
     $feed = json_decode($resp);
     curl_close($curl);
+    if (isset($_GET["raw"])) {
+        krumo($feed);
+    }
     foreach ($feed as $event) {
         $item = array(
             "links" => array(

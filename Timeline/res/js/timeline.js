@@ -23,9 +23,10 @@ $(document).ready(function() {
     }
     var colours = {
         "github": "default",
-        "reddit": "info"
+        "reddit": "warning",
+        "twitter": "info"
     }
-    $.each(["github", "reddit"], function(i, source) {
+    $.each(["github", "reddit", "twitter"], function(i, source) {
         $.ajax({
             url: "data/" + source + ".json",
             success: function(resp, stat, xhr) {
@@ -41,11 +42,11 @@ $(document).ready(function() {
                             footer.append($("<a/>").addClass("btn btn-default btn-sm")
                                               .attr("href", link.link)
                                               .append($("<i/>").addClass("fa fa-" + link.icon))
-                                              .append(link.text));
+                                              .append(link.text ? $("<span/>").append(link.text) : ""));
                         });
                         footer.append($("<a/>").addClass("btn btn-default btn-sm pull-right")
                                           .append($("<i/>").addClass("fa fa-clock-o"))
-                                          .append(formatDate(item.time)));
+                                          .append($("<span/>").append(formatDate(item.time))));
                         panel.append(footer);
                     }
                     $(".container").append(panel);

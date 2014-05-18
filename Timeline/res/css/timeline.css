@@ -1,9 +1,6 @@
 body {
     padding-top: 20px;
 }
-.btn + .btn {
+.btn + .btn, i.fa:not(.fa-fw) + span {
     margin-left: 5px;
-}
-i.fa:not(.fa-fw) {
-    margin-right: 5px;
 }
