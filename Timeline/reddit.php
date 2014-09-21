@@ -1,8 +1,8 @@
 <?
-require("/home/pi/lib/php/keystore.php");
-include("/home/pi/bin/krumo/class.krumo.php");
+require_once getenv("PHPLIB") . "keystore.php";
+include_once getenv("PHPLIB") . "krumo/class.krumo.php";
 $out = array();
-$meta = json_decode(file_get_contents("data/reddit.meta.json"), true);
+$meta = json_decode(file_get_contents(getenv("DATA") . "timeline/reddit.meta.json"), true);
 // iterate 10 pages
 for ($page = 0; $page < 10; $page++) {
     if ($page > 0 && !$after) {
@@ -15,14 +15,14 @@ for ($page = 0; $page < 10; $page++) {
     $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     if ($code !== 200) {
         print(json_encode(array("message" => "Failed to update page " . $page . " with error code " . $code . ".")));
-        $out = json_decode(file_get_contents("data/reddit.json"), true);
+        $out = json_decode(file_get_contents(getenv("DATA") . "timeline/reddit.json"), true);
         break;
     }
     $after = $feed->data->after;
     if ($page === 0 && !isset($_GET["force"])) {
         if ($feed->data->after === $meta["after"]) {
             print(json_encode(array("message" => "No changes since last update.")));
-            $out = json_decode(file_get_contents("data/reddit.json"), true);
+            $out = json_decode(file_get_contents(getenv("DATA") . "timeline/reddit.json"), true);
             break;
         }
         // updated, save current after id to meta
@@ -89,10 +89,10 @@ for ($page = 0; $page < 10; $page++) {
         array_push($out, $item);
     }
 }
-$file = fopen("data/reddit.json", "w");
+$file = fopen(getenv("DATA") . "timeline/reddit.json", "w");
 fwrite($file, json_encode($out));
 fclose($file);
-$file = fopen("data/reddit.meta.json", "w");
+$file = fopen(getenv("DATA") . "timeline/reddit.meta.json", "w");
 fwrite($file, json_encode($meta));
 fclose($file);
 if (isset($_GET["pretty"])) {

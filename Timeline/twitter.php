@@ -1,7 +1,7 @@
 <?
-require("/home/pi/lib/php/keystore.php");
-require("/home/pi/lib/php/twitter_api.php");
-include("/home/pi/bin/krumo/class.krumo.php");
+require_once getenv("PHPLIB") . "keystore.php";
+require_once getenv("PHPLIB") . "twitter_api.php";
+include_once getenv("PHPLIB") . "krumo/class.krumo.php";
 $out = array();
 $twitter = new TwitterAPIExchange(
     array(
@@ -48,7 +48,7 @@ foreach ($feed as $data) {
     }
     array_push($out, $item);
 }
-$file = fopen("data/twitter.json", "w");
+$file = fopen(getenv("DATA") . "timeline/twitter.json", "w");
 fwrite($file, json_encode($out));
 fclose($file);
 if (isset($_GET["pretty"])) {
